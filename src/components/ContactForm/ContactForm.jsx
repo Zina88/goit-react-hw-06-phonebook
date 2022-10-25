@@ -1,32 +1,32 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { nanoid } from 'nanoid';
+import { Report } from 'notiflix/build/notiflix-report-aio';
 import css from './ContactForm.module.css';
+import { useSelector, useDispatch } from 'react-redux';
+import { addContact, getContacts } from 'redux/contactSlice';
 
-export default function ContactForm({ onSubmit }) {
+export default function ContactForm({ onClose }) {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
 
-  const handleChange = e => {
-    const { name, value } = e.currentTarget;
+  const onChangeName = e => setName(e.currentTarget.value);
+  const onChangeNumber = e => setNumber(e.currentTarget.value);
 
-    switch (name) {
-      case 'name':
-        setName(value);
-        break;
-
-      case 'number':
-        setNumber(value);
-        break;
-
-      default:
-        return;
-    }
-  };
+  const contacts = useSelector(getContacts);
+  const dispatch = useDispatch();
 
   const handleSubmit = e => {
     e.preventDefault();
-    onSubmit({ name, number });
+
+    const newElement = { id: nanoid(), name, number };
+
+    contacts.some(contact => contact.name === name)
+      ? Report.warning(`${name}`, 'This user is already in the contact list.', 'OK')
+      : dispatch(addContact(newElement));
+
     reset();
+    onClose();
   };
 
   const reset = () => {
@@ -40,7 +40,7 @@ export default function ContactForm({ onSubmit }) {
         <span className={css.title}>Name</span>
         <input
           className={css.input}
-          onChange={handleChange}
+          onChange={onChangeName}
           type="text"
           name="name"
           value={name}
@@ -53,7 +53,7 @@ export default function ContactForm({ onSubmit }) {
         <span className={css.title}>Number</span>
         <input
           className={css.input}
-          onChange={handleChange}
+          onChange={onChangeNumber}
           type="tel"
           name="number"
           value={number}
@@ -70,6 +70,5 @@ export default function ContactForm({ onSubmit }) {
 }
 
 ContactForm.propTypes = {
-  name: PropTypes.string,
-  number: PropTypes.number,
+  onClose: PropTypes.func,
 };

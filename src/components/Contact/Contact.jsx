@@ -1,17 +1,15 @@
 import PropTypes from 'prop-types';
-import IconButton from 'components/IconButton';
-import { ReactComponent as DeleteIcon } from '../../icons/delete.svg';
+import { FaTrash, FaUserAlt } from 'react-icons/fa';
 import css from './Contact.module.css';
 
 const Contact = ({ name, number, onDeleteContact }) => (
-    <>
-      <p>{name}</p>
-      <p>{number}</p>
-      <IconButton>
-        <DeleteIcon className={css.delIcon} width="20" height="20" onClick={onDeleteContact} />
-      </IconButton>
-    </>
-  );
+  <>
+    <FaUserAlt className={css.contactLogo} />
+    <p>{name}</p>
+    <p>{number}</p>
+    <FaTrash className={css.delIcon} onClick={onDeleteContact}></FaTrash>
+  </>
+);
 
 export default Contact;
 
